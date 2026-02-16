@@ -1,0 +1,179 @@
+/* Custom Variables for your Brand Colors */
+:root {
+    --dusk-dark: #1a1a2e;
+    --moon-light: #e94560;
+    --text-white: #ffffff;
+    --accent-purple: #4e31aa;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--dusk-dark);
+    color: var(--text-white);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Header Styling
+header {
+    padding: 60px 0;
+    background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
+} */
+
+/* Full-width header bar */
+header {
+    background-color: #3F73AB; /* Your specific blue */
+    width: 100%;
+    padding: 20px 0; /* Space above and below the logo/text */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3); /* Adds depth */
+    margin-bottom: 40px;
+}
+
+/* Ensure the content inside the header stays centered and neat */
+header .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0; 
+}
+
+h1 {
+    font-family: 'Bungee', cursive;
+    font-size: 2.5rem;
+    margin: 10px 0 0 0;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.tagline {
+    font-size: 1rem;
+    color: #e0e0e0;
+    margin-bottom: 10px;
+}
+
+
+.main-logo {
+    /* This prevents the logo from ever being wider than 200px */
+    max-width: 200px; 
+    
+    /* On small screens, it will take up 40% of the container width */
+    width: 40%; 
+    
+    /* Keeps the aspect ratio perfect so the bat doesn't look squished */
+    height: auto; 
+    
+    /* Adds a little glow to match your dusk/moon theme */
+    filter: drop-shadow(0 0 10px rgba(233, 69, 96, 0.5));
+    
+    margin-bottom: 20px;
+    display: inline-block;
+}
+
+/* Mobile Tweak: If 40% is still too big on a tiny phone, we can adjust it */
+@media (max-width: 600px) {
+    .main-logo {
+        max-width: 150px; /* Even smaller for phones */
+        width: 50%; 
+    }
+}
+
+h1 {
+    font-family: 'Bungee', cursive; /* Game-style thick font */
+    font-size: 3rem;
+    margin: 0;
+    letter-spacing: 2px;
+}
+
+.tagline {
+    font-size: 1.2rem;
+    opacity: 0.8;
+}
+
+/* Game Card Styling */
+.section-title {
+    font-family: 'Bungee', cursive;
+    margin-top: 40px;
+    color: var(--moon-light);
+}
+
+.game-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 30px;
+    margin: 20px 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 25px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    margin: 10px;
+}
+
+.btn-primary {
+    background-color: var(--moon-light);
+    color: white;
+}
+
+.btn-secondary.disabled {
+    background-color: #555;
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Footer Styling */
+footer {
+    padding: 40px 0;
+    font-size: 0.9rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-links a {
+    color: var(--moon-light);
+    margin: 0 15px;
+    text-decoration: none;
+}
+
+/* Mobile Responsive Adjustments */
+@media (max-width: 600px) {
+    h1 { font-size: 2rem; }
+    .main-logo { width: 120px; }
+}
+
+.game-preview img {
+    width: 100%;
+    max-width: 500px; /* Adjust based on your screenshot size */
+    border-radius: 10px;
+    border: 3px solid #3F73AB;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+}
+
+/* On desktop, we can make the screenshot and text sit side-by-side */
+@media (min-width: 768px) {
+    .game-card {
+        display: flex;
+        align-items: center;
+        text-align: left;
+        gap: 30px;
+    }
+    .game-preview img {
+        margin-bottom: 0;
+    }
+}
