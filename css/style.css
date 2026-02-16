@@ -21,17 +21,12 @@ body {
     text-align: center;
 }
 
-/* Header Styling
-header {
-    padding: 60px 0;
-    background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
-} */
 
 /* Full-width header bar */
 header {
     background-color: #3F73AB; /* Your specific blue */
     width: 100%;
-    padding: 20px 0; /* Space above and below the logo/text */
+    padding: 10px 0; /* Space above and below the logo/text */
     box-shadow: 0 4px 10px rgba(0,0,0,0.3); /* Adds depth */
     margin-bottom: 40px;
 }
@@ -69,10 +64,10 @@ h1 {
     /* Keeps the aspect ratio perfect so the bat doesn't look squished */
     height: auto; 
     
-    /* Adds a little glow to match your dusk/moon theme */
+    /* Adds a little glow to match your dusk/moon theme 
     filter: drop-shadow(0 0 10px rgba(233, 69, 96, 0.5));
     
-    margin-bottom: 20px;
+    margin-bottom: 20px;*/
     display: inline-block;
 }
 
