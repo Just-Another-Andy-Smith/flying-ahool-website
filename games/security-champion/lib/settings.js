@@ -21,7 +21,7 @@ const settings = {
   lang:"lang-en",      // Set to the language file of your choice
   customExits:false,      // Set to true to use custom exits, in exits.js
   files:["code", "data"], // Additional files to load
-  libraries:["_file_saver", "_saveload", "_text", "_io", "_command", "_defaults", "_templates", "_world", "_npc", "_parser", "_commands"],  // util already loaded
+  libraries:["file_saver", "saveload", "text", "io", "command", "defaults", "templates", "world", "npc", "parser", "commands"],  // util already loaded
   customLibraries:[],
   imagesFolder:resourcesFolder + 'assets/images/',
   iconsFolder:resourcesFolder + 'assets/icons/',
