@@ -1,0 +1,354 @@
+/* =========================
+   QuestJS + Retro Terminal Merge
+   ========================= */
+
+body {
+  background: #0d0d0d;
+  color: #eaf7ee;
+  font-family: "IBM Plex Mono", "Lucida Console", "Consolas", "Courier New", monospace;
+  line-height: 1.55;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 3px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.025) 0, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 3px);
+  background-size: 280px 280px, 280px 280px;
+}
+
+#quest-map-title {
+  position: fixed;
+  right: 0;
+  top: 120px;
+  width: 340px;
+  height: 40px;
+  background: #08180f;
+  color: #baffcb;
+  border: 1px solid #59ff9d;
+  border-radius: 8px 8px 0 0;
+  padding: 8px 10px;
+  font-family: "Lucida Console", "Courier New", monospace;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  line-height: 1.2;
+  box-shadow: inset 0 0 12px rgba(89,255,157,0.22), 0 0 0 1px rgba(132,255,207,0.3);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+}
+
+#quest-map {
+  position: fixed;
+  right: 0;
+  top: 180px;
+  width: 340px;
+  height: 340px;
+  background: #071c0e;
+  border: 1px solid #59ff9d;
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: inset 0 0 14px rgba(89,255,157,0.25), 0 0 0 1px rgba(132,255,207,0.4), 0 0 16px rgba(89,255,157,0.12);
+  overflow: hidden;
+  background-image: radial-gradient(rgba(89,255,157,0.06) 1px, transparent 1px);
+  background-size: 16px 16px;
+  z-index: 2;
+}
+
+#quest-map svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: transparent;
+  border-radius: 4px;
+  border: 1px solid rgba(139,255,190,0.45);
+  box-shadow: inset 0 0 14px rgba(89,255,157,0.08);
+}
+
+#quest-map text {
+  font-family: "Lucida Console", "Courier New", monospace;
+  font-size: 11px;
+  fill: #dfffe9;
+}
+
+#quest-map .map-text {
+  color: #dfffe9;
+}
+
+#main {
+  margin-left: 185px;
+}
+
+#output {
+  background: #101710;
+  color: #dfffe9;
+  border: 2px solid #2b6a47;
+  border-radius: 8px;
+  padding: 22px;
+  box-shadow: inset 0 0 12px rgba(0, 255, 153, 0.2), 0 0 0 1px rgba(0,255,200,0.25);
+  background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 100% 4px;
+  font-size: 17px;
+}
+
+#output p {
+  margin: 10px 0;
+  padding: 0;
+}
+
+.default-h {
+  font-family: "Lucida Console", "Courier New", monospace;
+  font-size: 20px;
+  line-height: 1.6;
+  text-align: center;
+  padding: 14px;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, #1a331e, #071c0e);
+  color: #baffcb;
+  border-bottom: 3px solid #59ff9d;
+  box-shadow: 0 0 12px rgba(89,255,157,0.45);
+  letter-spacing: 1px;
+}
+
+#textbox {
+  background: #00140a;
+  color: #70ffba;
+  border: 2px solid #59ff9d;
+  padding: 10px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 16px;
+  border-radius: 4px;
+  width: 94%;
+}
+
+#cursor {
+  color: #baffcb;
+  animation: blink 1s steps(2) infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0.3; }
+}
+
+.side-panes {
+  background: #111811;
+  color: #eaf7ee;
+  border-right: 2px solid #59ff9d;
+  box-shadow: inset 0 0 14px rgba(89,255,157,0.12), 0 0 10px rgba(89,255,157,0.15);
+  padding: 10px 8px;
+  font-size: 10pt;
+}
+
+.pane-div {
+  background: #1a271d;
+  border: 1px solid #455d4c;
+  border-radius: 6px;
+  padding: 10px;
+  margin-bottom: 12px;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.55);
+}
+
+.side-pane-heading {
+  color: #7affb7;
+  font-family: "Lucida Console", "Courier New", monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #59ff9d;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.item-list {
+  margin-bottom: 10px;
+}
+
+.item {
+  cursor: pointer;
+  border: 1px solid #8dffb9;
+  border-radius: 4px;
+  padding: 6px 8px;
+  background: linear-gradient(#243826, #131d15);
+  color: #eaf7ee;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 12px;
+  width: auto;
+  max-width: 180px;
+  margin-left: 8px;
+  margin-bottom: 3px;
+  box-shadow: inset 0 0 8px rgba(0,255,153,0.1);
+}
+
+.item:first-child {
+  margin-top: 8px;
+}
+
+.item:hover {
+  color: #9affcb;
+  box-shadow: 0 0 7px rgba(89,255,157,0.7);
+}
+
+.sub-item {
+  background: #102816;
+  border: 1px solid #59ff9d;
+  color: #dfffe9;
+  border-radius: 4px;
+  padding: 4px;
+}
+
+.item-action {
+  cursor: pointer;
+  border: 1px solid #8dffb9;
+  border-radius: 4px;
+  padding: 4px 7px;
+  background: #142118;
+  color: #ddffe8;
+  font-family: "Courier New", Courier, monospace;
+  font-style: italic;
+  display: none;
+}
+
+#status-pane {
+  padding-left: 5pt;
+}
+
+button,
+td.compass-button {
+  background: linear-gradient(#34583a, #0d1a11);
+  border: 1px solid #8dffb9;
+  color: #eaf7ee;
+  font-family: "Courier New", Courier, monospace;
+  padding: 6px 10px;
+  border-radius: 4px;
+  box-shadow: inset 2px 2px 0 rgba(255,255,255,0.05), 3px 3px 0 rgba(0,0,0,0.6);
+  transition: background 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+}
+
+button:hover,
+td.compass-button:hover {
+  color: #9affcb;
+  background: linear-gradient(#446d50, #172718);
+}
+
+td.compass-button {
+  width: 24px;
+  min-width: 24px;
+  height: 28px;
+}
+
+span.compass-button {
+  padding: 3px;
+}
+
+.cmd-link,
+.exit-link,
+.object-link,
+.popup-link {
+  color: #8dffb9;
+  text-decoration: none;
+}
+
+.cmd-link:hover,
+.exit-link:hover,
+.object-link:hover,
+.popup-link:hover {
+  color: #dcffe9;
+  text-shadow: 0 0 4px #8dffb9;
+}
+
+.meta {
+  color: #dfffe9;
+  background: #111811;
+  padding: 10px;
+}
+
+.toolbar {
+  background: linear-gradient(#162516, #030a04);
+  border-bottom: 2px solid #59ff9d;
+  box-shadow: 0 2px 10px rgba(89,255,157,0.2);
+}
+
+.toolbar a.link {
+  color: #dfffe9;
+  border: 1px solid #59ff9d;
+  background: #0e1b11;
+  font-family: "Courier New", Courier, monospace;
+}
+
+.toolbar a.link:hover {
+  background: #203520;
+  color: #8dffb9;
+}
+
+.popup {
+  background: #071c0e;
+  border: 2px solid #59ff9d;
+  box-shadow: 0 0 20px rgba(89,255,157,0.45);
+  color: #eaf7ee;
+}
+
+.typewriter-active {
+  color: #8dffb9;
+}
+
+.help-eg {
+  color: #8dffb9;
+}
+
+.error {
+  color: #ff6c6c;
+}
+
+.debug {
+  color: #b4c096;
+}
+
+.pane-achievement-item {
+  color: #eaf7ee;
+  background: #0b160d;
+  border-left: 3px solid #59ff9d;
+  padding: 8px 7px;
+  margin: 4px 0;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.pane-achievement-item b {
+  color: #8dffb9;
+}
+
+.pane-achievement-item .achievement-title {
+  cursor: help;
+}
+
+.pane-achievement-item .achievement-status {
+  color: #8dffb9;
+}
+
+.pane-achievement-item small {
+  color: #b8d6be;
+}
+
+/* Custom Item Icons for QuestJS Sidebar */
+.item-icon {
+  display: inline-block;
+  margin-right: 4px;
+}
+
+.icon-chair::before       { content: "🪑 "; font-style: normal; }
+.icon-cd::before          { content: "💿 "; font-style: normal; }
+.icon-computer::before    { content: "💻 "; font-style: normal; }
+.icon-monitor::before     { content: "🖥️ "; font-style: normal; }
+.icon-terminal::before    { content: "📟 "; font-style: normal; }
+.icon-floppy::before      { content: "💾 "; font-style: normal; }
+.icon-document::before    { content: "📄 "; font-style: normal; }
+.icon-keycard::before     { content: "🪪 "; font-style: normal; }
+.icon-coffee::before      { content: "☕ "; font-style: normal; }
+.icon-food::before        { content: "🥪 "; font-style: normal; }
+.icon-tool::before        { content: "🛠️ "; font-style: normal; }
+.icon-umbrella::before    { content: "☂️ "; font-style: normal; }
+.icon-npc-m::before       { content: "👨‍💼 "; font-style: normal; }
+.icon-npc-f::before       { content: "👩‍💼 "; font-style: normal; }
+.icon-bug::before         { content: "👾 "; font-style: normal; }
+.icon-npc::before         { content: "🧑‍💼 "; font-style: normal; }
