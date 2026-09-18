@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
-  <title>The Quest for the Secure Commit</title>
+  <title>Security Champion: The Quest for Total Remediation (Enterprise Edition)</title>
   <link rel="icon" type="image/png" href="favicon.png">
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
@@ -26,17 +26,20 @@
 
   <script>
     const myScript = document.createElement("script")
-    myScript.setAttribute("src", folder + '/settings.js')
+    myScript.setAttribute("src", folder + 'settings.js')
     myScript.onload = function() {
-      settings.writeScript(folder, "", "")
+      if (typeof settings !== 'undefined') {
+        settings.writeScript(folder, "", "")
+      } else {
+        console.error("settings library failed to initialize.")
+      }
     }
     myScript.onerror = function() {
-      console.log("Failed to load file \"" + folder + "/settings.js\".")
-      console.log("Check the file and folder actually exist.")
-      console.log("This is probably because the folder \"" + folder + "\" does not exist, perhaps because it is wrongly specified in the address.")
+      console.log("Failed to load file \"" + folder + "settings.js\".")
     }
     document.head.appendChild(myScript)
   </script>
+</head>
   
 </head>
 
