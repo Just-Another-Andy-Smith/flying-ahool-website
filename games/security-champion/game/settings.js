@@ -10,6 +10,9 @@ settings.placeholderLocations = ['nowhere']
 
 // Hide the unused built-in status/health pane in the side panel.
 settings.statusPane = false
+settings.panes = 'left' // Tells QuestJS to render the UI sidebar on the left
+settings.compassPane = true
+settings.symbolsForDirections = ['↖', '↑', '↗', '←', 'U', '→', '↙', '↓', '↘', 'In', 'D', 'Out']
 
 // Enable Achievements and the Meta Menu in the UI.
 settings.metamenu = true            // Enables the meta options menu in the UI
