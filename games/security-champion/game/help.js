@@ -48,12 +48,16 @@ function getCustomHintHtml() {
       hintText = "Use the main elevator to reach the next floor and continue the site audit."
     }
   } else if (!puzzles.act2Complete) {
-    if (!puzzles.bugSprayGiven) {
-      hintText = "Your Security Manager mentioned missing his red Swingline stapler. Find it and trade with him."
-    } else if (!puzzles.s3Locked) {
+    if (!puzzles.s3Locked) {
       hintText = "The build terminal on the Floor 2 landing has an open FTP service. Use <b>disable ftp</b> to secure it."
+    } else if (!puzzles.shadowAdminFixed) {
+      hintText = "Use your Least Privilege Keycard on the deployment terminal in the Floor 2 Build & Release Lab to print the Nightly Build Logs."
+    } else if (!w.code_review_checklist.isHeld()) {
+      hintText = "Check your office for the Code Review Checklist before heading to the whiteboard."
+    } else if (!w.dry_erase_markers.isHeld()) {
+      hintText = "Pick up the dry-erase markers from the conference table in the Meeting Room."
     } else if (!puzzles.threatModelComplete) {
-      hintText = "Gather the Code Review Checklist and Nightly Build Logs, pick up the dry-erase markers in the Meeting Room, and type <b>threat model</b>."
+      hintText = "You have the markers, logs, and checklist. Talk to Archie and type <b>threat model</b>."
     } else {
       hintText = "The threat model points to the basement! Take the elevator down to <b>Basement</b>."
     }

@@ -179,6 +179,48 @@ settings.beforeEnter = function(room) {
   return true
 }
 
+function triggerFinalGameVictory(unlockedCount, totalCount, scorePct) {
+  puzzles.act4Complete = true
+
+  let rankTitle = "JUNIOR IT SUPPORT TECH"
+  if (scorePct === 100) rankTitle = "LEGENDARY CHIEF INFORMATION SECURITY OFFICER (CISO)"
+  else if (scorePct >= 80) rankTitle = "SENIOR SECURITY CHAMPION"
+  else if (scorePct >= 60) rankTitle = "INCIDENT RESPONSE SPECIALIST"
+  else if (scorePct >= 40) rankTitle = "APPSEC CODE AUDITOR"
+
+  msg(`<br><div style="border: 3px double #00ff00; background-color: #041405; color: #33ff33; padding: 20px; border-radius: 8px; font-family: monospace; box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);">
+    <div style="font-size: 1.6em; font-weight: bold; letter-spacing: 2px; text-align: center; color: #00ff00;">
+      MISSION ACCOMPLISHED — TEMPEST HQ SAVED!
+    </div>
+    <div style="font-size: 1.0em; text-align: center; color: #17a2b8; margin-top: 4px; font-style: italic;">
+      Official Incident Remediated — Downtown Chicago HQ
+    </div>
+    <hr style="border: 0; border-top: 1px solid #00aa00; margin: 12px 0;">
+    
+    <p>Victoria Sterling breathes a massive sigh of relief, lets out a laugh, and turns to your Security Manager: <i>'Unbelievable teamwork! Skyler handled every stage of this crisis, bridged the gap between our Business, Development, and Security teams, and saved our headquarters!'</i></p>
+    
+    <p>Your Security Manager grins and nods approvingly: <i>'I told you hiring a Security Champion was the right move!'</i></p>
+
+    <div style="border: 1px dashed #28a745; background-color: #09240c; padding: 12px; margin: 14px 0; border-radius: 5px;">
+      <div style="font-size: 1.1em; font-weight: bold; color: #ffc107; text-align: center;">
+        📊 FINAL SECURITY CHAMPION SCORECARD
+      </div>
+      <hr style="border: 0; border-top: 1px solid #1e7e34; margin: 8px 0;">
+      <div style="font-size: 1.05em; line-height: 1.6;">
+        • <b>Acts Completed:</b> <span style="color:#00ff00; font-weight:bold;">4 / 4 (100%)</span><br>
+        • <b>Achievements Unlocked:</b> <span style="color:#00ff00; font-weight:bold;">${unlockedCount} / ${totalCount}</span> (${scorePct}% Completion)<br>
+        • <b>Final Performance Rank:</b> <span style="color:#ffc107; font-weight:bold;">${rankTitle}</span><br>
+        • <b>Status:</b> C-Suite Incident Closed & Executive Promotion Approved!
+      </div>
+    </div>
+
+    <p style="text-align: center; font-weight: bold; color: #00ff00; margin-bottom: 0;">
+      THANK YOU FOR PLAYING Security Champion: The Quest for Total Remediation!
+    </p>
+  </div><br>`)
+
+  return world.SUCCESS
+}
 
 // =============================================================================
 // 1. GLOBAL GAME STATE & PUZZLE TRACKING
@@ -285,7 +327,7 @@ if (typeof metamenu !== "undefined" && metamenu.addAchievement) {
   metamenu.addAchievement("mfa_master", "Factor This!", "Calibrate the RSA SecurID key and bypass the elevator MFA lock.")
   metamenu.addAchievement("cloud_guard", "Talk to the hand", "Block public read/write access on the customer log bucket.")
   metamenu.addAchievement("jenny_number", "Don't Change Your Number", "Called Jenny and tried to leave your phone number.")
-  metamenu.addAchievement("xss_slayer", "DOM Purified", "Sanitize user input in order_comments.js to defeat Stored XSS.")
+  metamenu.addAchievement("xss_slayer", "DOM Purified", "Sanitize user input in order_comments.js to defeat Cross-HTML Script Tag Injection (Stored XSS).")
   metamenu.addAchievement("clean_desk", "Lock It Or Lose It", "Enforce Clean Desk policy on the unattended basement terminal.")
   metamenu.addAchievement("sudo_chef", "I Have the Power!", "Successfully use root privileges to force Joe to make you a sandwich.")
   metamenu.addAchievement("phish_slayer", "Master Angler", "Intercepted a malicious email with an executable before a Sales rep could run it.")
@@ -484,7 +526,7 @@ createRoom("leaky_mug_cafe", {
   alias: "The Leaky Mug Café",
   x: 1, y: 1, z: 1,
   desc: function() {
-    let baseDesc = "The official IT café for Tempest Weatherwear & Gear employees. It smells faintly of burnt espresso and vulcanized boot rubber. A dusty banner near the coffee pot proudly proclaims: 'Tempest: Weathering the Corporate Storm Since 1978.'"
+    let baseDesc = "The official IT café for Tempest Weatherwear & Gear employees. It smells faintly of burnt espresso and vulcanized boot rubber. Mounted on a small tripod next to the coffee maker is a round grey Connectix QuickCam pointed straight at the pot. A dusty banner near the counter proudly proclaims: 'Tempest: Weathering the Corporate Storm Since 1978.'"
     if (player.loc === "leaky_mug_cafe" && !puzzles.s3Locked && puzzles.act1Complete) {
       baseDesc += "<br><br>Sitting at a corner table with a sandwich and a glowing laptop is Morgan, the Incident Response Lead."
     }
@@ -500,8 +542,8 @@ createRoom("security_office", {
   north: new Exit("floor1_reception", { msg: "You leave the office and step back into the reception area." }),
 })
 
-// --- ELEVATOR BANK ---
 
+// --- ELEVATOR BANK ---
 function setElevatorMapLocation(dest) {
   const mapLocation = w.elevator_1.locations?.find(location => location.connectedRoom.name === dest)
   if (!mapLocation) return
@@ -639,7 +681,7 @@ createRoom("floor2_meeting_room", {
 createRoom("floor2_dev_area", {
   alias: "Developer Area",
   x: 1, y: 0, z: 2,
-  desc: "Desks are cluttered with dual monitors, mechanical keyboards, and half-tested samples of waterproof rubber boot linings. The bathroom is to the south and double doors to the north open into the employee breakroom, while a hallway banner overhead reads: 'Quality Code is Like a Good Umbrella: Zero Leaks Allowed.'",
+  desc: "Desks are cluttered with dual monitors, mechanical keyboards, and half-tested samples of waterproof rubber boot linings. A corner workstation has a CRT monitor showing the live intranet Coffee Pot Cam feed. The bathroom is to the south and double doors to the north open into the employee breakroom, while a hallway banner overhead reads: 'Quality Code is Like a Good Umbrella: Zero Leaks Allowed.'",
   west: new Exit("floor2_landing", { msg: "You return to the landing." }),
   east: new Exit("floor2_devops", { msg: "You walk into the Build & Release Lab." }),
   north: new Exit("floor2_breakroom", { msg: "You push open the double doors into the employee breakroom." }),
@@ -738,7 +780,7 @@ createRoom("floor3_landing", {
 createRoom("floor3_meeting_b", {
   alias: "Meeting Room B",
   x: -1, y: 0, z: 3,
-  desc: "A medium-sized conference room with a large screen and modular seating.",
+  desc: "A medium-sized conference room with modular seating and a whiteboard covered in flowchart diagrams. Spread across the long conference table are stacks of COBOL printouts, calendar rollover checklists, and high-visibility yellow highlighters.",
   east: new Exit("floor3_landing", { msg: "You head back to the landing." }),
 })
 
@@ -778,7 +820,7 @@ createRoom("office_4", {
 createRoom("office_5", {
   alias: "Office 5 — Security Manager's Office",
   x: 1, y: -1, z: 3,
-  desc: "A neat, organized office belonging to your Security Manager. A mahogany desk sits against the back wall, topped with a rain-sound white noise machine and a glass paperweight shaped like a tempest storm cloud.",
+  desc: "A neat, organized office belonging to your Security Manager. A mahogany desk sits against the back wall, topped with a rain-sound white noise machine, a glass paperweight shaped like a tempest storm cloud, and a pristine, encased Beanie Baby penguin.",
   north: new Exit("floor3_office_corridor", { msg: "You step back into the office corridor." }),
 })
 
@@ -1118,7 +1160,7 @@ createItem("brewster", NPC(), {
       msg("Java Joe nods at your mug. 'You've already got coffee, my friend. Finish that cup first before asking for a top-off!'")
     }
 
-    if (puzzles.act1Complete) {
+    if (puzzles.act2Complete) {
       msg("<br>Joe: 'If you're looking for lunch, I've got fresh turkey sandwiches today. Just say the word!'")
     }
     return world.SUCCESS
@@ -1133,11 +1175,11 @@ createItem("morgan_ir_lead", NPC(), {
     if (this.loc === "floor1_entrance") {
       return "Morgan from Incident Response stands under the entrance canopy, clutching a freshly printed clipboard and keeping dry out of the rain."
     } else if (this.loc === "leaky_mug_cafe") {
-      return "Morgan is taking a quick lunch break, but her eyes are glued to a live SIEM threat feed on her laptop."
+      return "Sitting at a corner table with a hot mug of coffee and a glowing laptop is Morgan, reviewing live SIEM threat feeds.  She has a sandwich in a to-go container beside her."
     } else if (this.loc === "floor2_meeting_room") {
       return "Morgan is at the table talking to Archie about some new secure standards she is thinking about implementing."
     } else {
-      return "Morgan is reviewing threat intelligence logs across three vertical monitors at her desk in Office 8."
+      return "Morgan is reviewing threat intelligence logs across three vertical monitors at her desk."
     }
   },
   getVerbs: function() {
@@ -1148,6 +1190,22 @@ createItem("morgan_ir_lead", NPC(), {
   },
   talkto: function() {
     // Act 1: Initial Intro & Onboarding Checklist Hand-off
+
+  if (this.loc === "leaky_mug_cafe") {
+    if (!puzzles.monitorSync) {
+      msg("Morgan looks up from her glowing laptop screen and takes a sip from a heavy ceramic mug.")
+      msg("Morgan: <i>'Hey Skyler! Taking a quick caffeine break? Java Joe brews a mean dark roast.'</i>")
+      msg("Morgan: <i>'Before you head upstairs, don't forget to grab your <b>RSA SecurID fob</b> from the Security Office. You'll need that rolling 6-digit passcode to sync the MFA terminal in the lobby and unlock the elevator panel.'</i>")
+      msg("Morgan: <i>'Once you get upstairs to Floor 2, meet me in the main Conference Room. We've got a Threat Modeling session scheduled with Archie to map out our application attack surface.'</i>")
+      return world.SUCCESS
+    } else {
+      msg("Morgan grins and gives you a thumbs-up from her table.")
+      msg("Morgan: <i>'Nice work getting that MFA terminal synced, Skyler! I saw the green authorization chime ping on my SIEM feed.'</i>")
+      msg("Morgan: <i>'Head on up to Floor 2 when you're ready. I'll meet you in the Conference Room so we can run through that Threat Model on the dry-erase board!'</i>")
+      return world.SUCCESS
+    }
+  }
+
     if (this.loc === "floor1_entrance") {
       if (!w.onboarding_packet.isHeld()) {
         w.onboarding_packet.loc = "me"
@@ -1165,12 +1223,11 @@ createItem("morgan_ir_lead", NPC(), {
     // Act 2: Security Ops Meeting Room (Floor 2)
     if (this.loc === "floor2_meeting_room") {
       if (!puzzles.s3Locked) {
-        msg("Morgan looks up from her tablet: <i>'Skyler! Glad you made it up to Ops. Our SIEM just flagged a high-priority alert on this floor.'</i>")
         msg("Morgan: <i>'Skyler! Glad you made it up to Ops. Our intrusion detector just flagged a severe misconfiguration. Someone pushing the latest XP release candidate left our main customer log directory hosted on an unauthenticated FTP server with full World-Writable permissions!")
         msg("Morgan: <i>'Can you head out to the build terminal on the landing and lock down the anonymous FTP access before an external web crawler indexes our customer logs?'</i>")
         return world.SUCCESS
       } else if (!puzzles.threatModelComplete) {
-        msg("Morgan points to the whiteboard: <i>'Great job securing that FTP server! Now place your Code Review Checklist and the Pipeline Logs on the table so we can map out our complete threat model on the whiteboard.'</i>")
+        msg("Morgan points to the whiteboard: <i>'Great job securing that FTP server! Once you place your Code Review Checklist and the Pipeline Logs, we can map out our complete threat model on the whiteboard.'</i>")
         return world.SUCCESS
       }
     }
@@ -1193,7 +1250,7 @@ createItem("cafe_coffee", TAKEABLE(), {
       { name: 'Drop', action: 'drop %' },
     ]
   },
-  // Custom drink function recognized directly by QuestJS
+ 
   drink: function() {
     puzzles.coffeeCount++
 
@@ -1275,6 +1332,23 @@ createItem("aol_cd", TAKEABLE(), {
   },
 })
 
+createItem("coffee_pot_cam", {}, {
+  loc: "leaky_mug_cafe",
+  alias: "Connectix QuickCam (Coffee Pot Cam)",
+  synonyms: ['quickcam', 'webcam', 'cam', 'camera', 'coffee cam', 'quick cam', 'coffee pot cam'],
+  icon: () => 'monitor',
+  examine: "A round grey Connectix QuickCam plugged into a parallel port, pointed directly at the coffee pot. It streams a 160x120 grayscale frame to the local intranet every 45 seconds so developers can check if a fresh pot has been brewed.",
+  getVerbs: function() {
+    return [
+      { name: 'Examine', action: 'examine %' },
+      { name: 'Adjust Angle', action: 'use %' }
+    ]
+  },
+  use: function() {
+    msg("You nudge the spherical camera slightly. Somewhere on Floor 2, a developer's browser window flashes a 160x120 grayscale frame update showing a close-up of your thumb.")
+    return world.SUCCESS
+  }
+})
 
 createItem("security_office_door", {}, {
   loc: "floor1_reception",
@@ -1476,7 +1550,7 @@ createItem("qa_tester", NPC(), {
     w.xss_bug_report.loc = "me"
     msg("QA Tester: 'Skyler! Perfect timing. I was reviewing our customer ordering portal against the <b>OWASP Top 10</b> guidelines, and I hit a major red flag.'")
     msg("<i>'Someone bypassed input sanitization on the comment field. If a user inputs raw script tags, the browser executes them right on the admin dashboard!'</i>")
-    msg("She hands you <b>Bug Ticket #SEC-309 (XSS vulnerability ticket)</b>.")
+    msg("She hands you <b>Bug Ticket #SEC-309 (Cross-HTML Script Tag Injection)</b>.")
     msg("QA Tester: 'Head back to your office and patch the rendering logic in <code>order_comments.js</code>!'")
     return world.SUCCESS
   }
@@ -1607,7 +1681,7 @@ createItem("xss_bug_report", TAKEABLE(), {
   loc: false,
   alias: "XSS vulnerability ticket",
   synonyms: ['ticket', 'bug report', 'bug ticket', 'xss report', 'paper ticket'],
-  examine: "Bug Ticket #SEC-309 (OWASP A03:2021 — Stored XSS): Customer order comment field renders raw user input via innerHTML. Vulnerable to Stored XSS.",
+  examine: "Bug Ticket #SEC-309 (Cross-HTML Script Tag Injection): Customer order comment field renders raw user input via innerHTML in Netscape Navigator and IE4. Vulnerable to malicious client-side script execution.",
 })
 
 createItem("skyler_workstation", {}, {
@@ -1617,7 +1691,7 @@ createItem("skyler_workstation", {}, {
   examine: function() {
     if (!puzzles.xssFixed) {
       if (w.xss_bug_report.isHeld()) {
-        return "Your dual-monitor workstation is ready. Bug Ticket #SEC-309 is open on your left screen.<br>File: <code>order_comments.js</code><br>Issue: <b>Stored XSS in Order Review Box</b>. <i>(Time to squash some bugs!))</i>"
+        return "Your dual-monitor workstation is ready. Bug Ticket #SEC-309 is open on your left screen.<br>File: <code>order_comments.js</code><br>Issue: <b>Cross-HTML Script Tag Injection in Order Review Box</b>. <i>(Time to squash some bugs!))</i>"
       } else {
         return "Your terminal is open to your development workspace. You have your usual tools open, but no active high-priority security tickets assigned to your queue yet."
       }
@@ -1791,18 +1865,51 @@ createItem("security_manager", NPC(), {
   },
 
   talkto: function() {
+    // ALWAYS ensure the keycard is handed over if the player somehow missed it earlier
+    let keycardMsg = ""
+    if (!puzzles.keycardGiven) {
+      puzzles.keycardGiven = true
+      w.least_privilege_keycard.loc = "me"
+      if(player.loc === "office_5"){
+        keycardMsg = "<br><br>Security Manager: <i>'By the way, here is your <b>Least Privilege Keycard</b> for the DevOps wing on Floor 2. You'll need it to sanitize that rogue deployment pipeline.'</i><br><i>(You received the <b>Least Privilege Keycard</b>!)</i>"
+      } else {
+        keycardMsg = "<br><br>Security Manager: <i>'By the way, stop by my office and pick up the <b>Least Privilege Keycard</b>. You'll need it to sanitize that rogue deployment pipeline.'</i>"
+      }
+    }
+
+  // If player restored backups but had < 80% score when they did it
+  if (puzzles.backupRestored && !puzzles.act4Complete) {
+    const allActsComplete = puzzles.act1Complete && puzzles.act2Complete && puzzles.act3Complete
+    
+    const allAchievements = Object.values(globalThis.metamenu?.achievements ?? {})
+    const totalCount = allAchievements.length || 15
+    const unlockedCount = allAchievements.filter(ach => ach.unlocked).length
+    const scorePct = Math.round((unlockedCount / totalCount) * 100)
+
+    if (allActsComplete) {
+      msg("Your Security Manager beams with pride and shakes your hand firmly!")
+      msg("Security Manager: <i>'Sensational work today, Skyler! You handled every core security issue across all four floors and secured our entire infrastructure. I'm submitting your promotion paperwork to Ms. Sterling right now!'</i>")
+      return triggerFinalGameVictory(unlockedCount, totalCount, scorePct)
+    } else {
+      msg("Security Manager reviews his tablet: <i>'Great job stopping the CEO's ransomware emergency, Skyler! But Morgan tells me we still have other security issues on the lower floors. Can you assist her with addressing those remaining issues and come back to see me when you're done!'</i>")
+      return world.SUCCESS
+    }
+  }
+
     // Act 4 Incident War Room Dialogue (CEO Office)
     if (puzzles.act3Complete) {
       if (!puzzles.networkIsolated) {
         msg("Security Manager: <i>'Skyler! Thank goodness you made it up from the basement. Ms. Sterling's workstation is leaking encrypted data over port 443 right now. Isolate that network gateway under her desk!'</i>")
-        return world.SUCCESS
       } else if (!puzzles.backupRestored) {
         msg("Security Manager: <i>'Great job severing the outbound link! Now sprint into the Executive Telecom Closet next door and run a full system restore from the offline backup controller!'</i>")
-        return world.SUCCESS
       } else {
         msg("Security Manager smiles and shakes your hand: <i>'Sensational work today, Skyler! You handled every level of this incident like a true Security Champion.'</i>")
-        return world.SUCCESS
       }
+
+      //Show the keycard message if needed
+      msg(keycardMsg)
+
+      return world.SUCCESS
     }
 
     // Default Acts 1–3 Dialogue
@@ -1829,13 +1936,38 @@ createItem("security_manager", NPC(), {
   }
 })
 
-
+createItem("puddles_beanie_baby", TAKEABLE(), {
+  loc: "office_5",
+  alias: "Puddles the Penguin Beanie Baby",
+  synonyms: ['puddles', 'penguin', 'beanie baby', 'plush', 'toy', 'beanie'],
+  examine: "A tiny plush penguin with a heart-shaped 'TY' tag enclosed in a plastic protective case. Your manager insists it's a 'high-yield long-term corporate asset' that will easily pay for next year's server upgrades.",
+  getVerbs: function() {
+    const verbs = [
+      { name: 'Examine', action: 'examine %' },
+      { name: 'Squeeze', action: 'squeeze %' },
+    ]
+    if (this.isHeld()) {
+      verbs.push({ name: 'Drop', action: 'drop %' })
+    } else {
+      verbs.push({ name: 'Take', action: 'take %' })
+    }
+    return verbs
+  },
+  squeeze: function() {
+    msg("You carefully compress the plastic case around Puddles. The bean-filled penguin stays pristine inside its mint-condition vault, preserving its theoretical $5,000 resale value.")
+    return world.SUCCESS
+  }
+})
 
 createItem("least_privilege_keycard", TAKEABLE(), {
   loc: false, // Handed over by Security Manager
   alias: "Least Privilege Keycard",
-  synonyms: ['keycard', 'least privilege keycard'],
+  synonyms: ['keycard', 'least privilege keycard', 'least privilege card'],
   examine: "A security key provisioned with strictly scoped RBAC policies.",
+  // Lets the generic "use" verb trigger the fix instead of falling through to "No obvious way to use it."
+  useFunction: function() {
+    return executeFixShadowAdmin()
+  },
 })
 
 createItem("bug_spray", TAKEABLE(), {
@@ -1879,6 +2011,30 @@ createItem("architect_archie", NPC(), {
   }
 })
 
+createItem("coffee_cam_monitor", {}, {
+  loc: "floor2_dev_area",
+  alias: "Coffee Cam Intranet Terminal",
+  synonyms: ['monitor', 'screen', 'coffee monitor', 'intranet terminal', 'quickcam feed', 'feed', 'terminal'],
+  icon: () => 'monitor',
+  examine: function() {
+    let statusText = w.cafe_coffee.isHeld()
+      ? "The 160x120 pixelated frame shows Java Joe wiping down the counter beside an empty glass carafe."
+      : "The 160x120 pixelated frame renders a grainy, monochrome view of the coffee pot down in The Leaky Mug. A dark liquid line indicates a fresh batch is brewing!"
+    
+    return `A dedicated 14-inch CRT monitor displaying a Netscape Navigator 4.0 window running a Refresh meta tag (<code>http://intranet.tempest/cam/coffee.cgi</code>).<br><br><b>[INTRANET LIVE FEED — 160x120 GREYSCALE]</b><br>${statusText}`
+  },
+  getVerbs: function() {
+    return [
+      { name: 'Examine', action: 'examine %' },
+      { name: 'Refresh Feed', action: 'use %' }
+    ]
+  },
+  use: function() {
+    msg("<b>*CLICK*</b> You hit `Reload` in Netscape Navigator. The screen flickers, redrawing the 160x120 GIF line-by-line over a 28.8k intranet link.")
+    return world.SUCCESS
+  }
+})
+
 createItem("lead_developer", NPC(), {
   loc: "floor2_dev_area",
   alias: "Lead Developer",
@@ -1891,15 +2047,23 @@ createItem("lead_developer", NPC(), {
     ]
   },
   talkto: function() {
-    // State 1: Shadow Admin is NOT fixed yet
-    if (!puzzles.shadowAdminFixed) {
-      msg("The Lead Developer rubs her temples and groans without taking her hands off her mechanical keyboard.")
-      msg("Lead Dev: <i>'Skyler! Look, I'd love to chat about threat models, but our pair programming partner on the build server configured our automated nightly build script to run under root!'</i>")
-      msg("Lead Dev: <i>'If Chad pushes our iteration release right now, we're going to overwrite the production master tree. Head into the XP Wing and use your keycard to enforce Least Privilege on the build script!'</i>")
+// State 1: Fix the build FTP Server
+    if (!puzzles.ftAdminFixed) {
+      msg("The Lead Developer lifts her hands off her keyboard, rubs her temples, and groans in frustration.")
+      msg("Lead Dev: <i>'Skyler! Look, I'd love to chat about threat models, but someone enabled anonymous write access and hardcoded admin credentials on our internal FTP build server!'</i>")
+      msg("Lead Dev: <i>'If anyone drops a malicious file in that upload directory, it could compromise our entire release tree. Head over to the FTP console and lock down those permissions!'</i>")
       return world.SUCCESS
     }
 
-    // State 2: Shadow Admin is fixed, but threat model incomplete
+    // State 2: Fix the Shadow Admin / Least Privilege issue
+    if (!puzzles.shadowAdminFixed) {
+      msg("The Lead Developer sighs and leans back in her ergonomic chair, tapping her desk in frustration.")
+      msg("Lead Dev: <i>'Thanks for fixing the FTP server, Skyler, but we still have a huge issue in the Build & Release Lab. Chad configured our automated `make_release.bat` script to execute under full Domain Admin privileges!'</i>")
+      msg("Lead Dev: <i>'If that build script gets hijacked, the attacker inherits complete control over the NT domain controller. Head into the Build & Release Lab and swipe your Least Privilege Keycard at the terminal console to enforce `svc_builder` service account restrictions!'</i>")
+      return world.SUCCESS
+    }
+
+    // State 3: Shadow Admin is fixed, but threat model incomplete
     if (!puzzles.threatModelComplete) {
       if (!w.code_review_checklist.isHeld()) {
         msg("Lead Dev: <i>'Awesome work locking down that build script! Now we can actually run our threat model without production catching fire.'</i>")
@@ -1921,6 +2085,67 @@ createItem("lead_developer", NPC(), {
     const randomQuote = devQuotes[Math.floor(Math.random() * devQuotes.length)]
     
     msg(`The Lead Developer takes a sip of stale coffee and gives you a weary nod:<br>${randomQuote}`)
+    return world.SUCCESS
+  }
+})
+
+createItem("todd_developer", NPC(), {
+  loc: "floor2_dev_area",
+  alias: "Todd (Full-Stack Developer)",
+  synonyms: ['todd', 'dev', 'developer', 'mid level dev', 'todd developer'],
+  examine: function() {
+    if (this.loc === "floor2_dev_area") {
+      return "Todd is hunched over his keyboard wearing a faded 1995 Netscape Navigator T-shirt. He keeps glancing over his shoulder at the Coffee Cam CRT monitor."
+    } else {
+      return "Todd is standing near Java Joe's counter, carefully filling a thermal mug to the brim with dark roast."
+    }
+  },
+  getVerbs: function() {
+    return [
+      { name: 'Examine', action: 'examine %' },
+      { name: 'Talk to', action: 'talk to %' },
+    ]
+  },
+  talkto: function() {
+    // --- STATE 1: TODD IS DOWN AT THE LEAKY MUG CAFÉ ---
+    if (this.loc === "leaky_mug_cafe") {
+      msg("Todd takes a deep sip from his overflowing mug and sighs with satisfaction:")
+      msg("Todd: <i>'Ahhh, fresh Industrial Roast! That Coffee Cam setup is the best feature IT ever deployed. Gotta head back upstairs before Chad notices I stepped away from my workstation!'</i>")
+      
+      // Move Todd back upstairs after speaking with him downstairs
+      this.loc = "floor2_dev_area"
+      msg("<br><i>(Todd grabs his mug and rushes back toward the elevator.)</i>")
+      return world.SUCCESS
+    }
+
+    // --- STATE 2: TODD IS IN FLOOR2_DEV_AREA & SPOTS A FRESH POT ---
+    // If player hasn't taken the coffee, the pot downstairs is full!
+    if (!w.cafe_coffee.isHeld()) {
+      msg("Todd glances at the Coffee Cam monitor, his eyes widening as he sees the dark liquid line on the screen.")
+      msg("Todd: <i>'Hold that thought, Skyler! The QuickCam just refreshed—Joe just brewed a fresh pot down in the Leaky Mug! I'm sprinting down before Sales drinks it all.'</i>")
+      
+      // Move Todd down to the café
+      this.loc = "leaky_mug_cafe"
+      msg("<br><i>(Todd grabs his thermal mug off his desk and power-walks toward the stairs!)</i>")
+      return world.SUCCESS
+    }
+    // --- STATE 3: GENERAL RANDOM DIALOGUE POOL (UPSTAIRS) ---
+    const toddQuotes = [
+      "<i>'I tried convincing Chad to let us rewrite our frontend in JavaScript, but he said Netscape 4.0's rendering engine is not compatible with Internet Explorer.'</i>",
+      "<i>'Did you know Visual SourceSafe locks the entire file when someone checks it out? Lead Dev has had `main.cpp` checked out since Tuesday!'</i>",
+      "<i>'If Java Joe runs out of dark roast before 2:00 PM, my patch delivery velocity is dropping to absolute zero.'</i>",
+      "<i>'I set my terminal font to neon green on black. It doesn\'t make the C++ compile any faster, but it makes me feel like I\'m hacking Gibson supercomputers in Hackers.'</i>"
+    ]
+
+    // Cycle through quotes sequentially to guarantee variety
+    if (typeof this.quoteIndex === "undefined") {
+      this.quoteIndex = 0
+    } else {
+      this.quoteIndex = (this.quoteIndex + 1) % toddQuotes.length
+    }
+
+    const currentQuote = toddQuotes[this.quoteIndex]
+    msg(`Todd pauses his typing and turns around in his swivel chair:<br>${currentQuote}`)
     return world.SUCCESS
   }
 })
@@ -2067,6 +2292,7 @@ createItem("chad_pm", NPC(), {
       "<i>'I just updated the Microsoft Project Gantt chart on the plot printer. If we don't freeze code requirements by 5:00 PM, the Critical Path slip is going to push our UAT milestone into Q4!'</i>"
     ]
     const randomQuote = chadQuotes[Math.floor(Math.random() * chadQuotes.length)]
+    msg(`Chad looks up from his PERT chart binder with an exasperated sigh:<br>${randomQuote}`)
     return world.SUCCESS
   }
 })
@@ -2109,6 +2335,86 @@ commands.push(new Cmd('KnockRestroomDoor', {
     return executeTryRestroomDoor()
   }
 }))
+
+createItem("evelyn_y2k_auditor", NPC(), {
+  loc: "floor3_meeting_b",
+  alias: "Evelyn (Y2K Compliance Auditor)",
+  synonyms: ['evelyn', 'auditor', 'y2k auditor', 'compliance auditor', 'woman'],
+  examine: "Evelyn wears a high-contrast pinstripe power suit with prominent 1990s shoulder pads. She clutches a thick leather binder labeled <i>'PROJECT MILLENNIUM: Y2K CENTURY-DATE COMPLIANCE AUDIT'</i> in one hand and a bright yellow highlighter in the other. She looks deeply stressed about two-digit year variables.",
+  getVerbs: function() {
+    return [
+      { name: 'Examine', action: 'examine %' },
+      { name: 'Talk to', action: 'talk to %' },
+    ]
+  },
+  talkto: function() {
+    // Dynamic Y2K dialogue pool
+    const evelynQuotes = [
+      "<i>'Skyler! Tell me your team isn't using <code>YY</code> formatting in the COBOL database schemas! If those date fields roll over to <code>00</code> on midnight of December 31st, 1999, the elevator door logic is going to revert to 1900!'</i>",
+      "<i>'I'm auditing every C++ header file for <code>struct tm</code> offsets! If <code>tm_year</code> returns 100 instead of 2000, our automated order billing batch jobs will freeze nationwide!'</i>",
+      "<i>'Management thinks Y2K is just media hype, but I've personally highlighted 400 lines of unvetted legacy code in the basement server repo today!'</i>",
+      "<i>'Have you verified the BIOS clock on the main elevator controller? If the RTC chip doesn't support 4-digit years, we'll be taking the stairs in the year 2000!'</i>",
+      "<i>'Don't talk to me about Gantt chart milestones! If our date parsing functions aren't 4-digit compliant by Q4, the entire enterprise grid goes back to the Gilded Age!'</i>"
+    ]
+
+    const randomQuote = evelynQuotes[Math.floor(Math.random() * evelynQuotes.length)]
+    msg(`Evelyn uncaps her yellow highlighter and shakes her binder:<br>${randomQuote}`)
+    return world.SUCCESS
+  }
+})
+
+// --- PALMPILOT PDA (Skyler's Desk) ---
+createItem("palmpilot_pda", TAKEABLE(), {
+  loc: "office_4",
+  alias: "PalmPilot Vx PDA",
+  synonyms: ['palmpilot', 'pda', 'palm', 'stylus'],
+  icon: () => 'monitor',
+  examine: "A sleek anodized aluminum PalmPilot Vx resting in a serial hot-sync cradle. The monochrome screen displays your Calendar for today: '08:00 AM — HR Onboarding', '11:30 AM — Threat Model Review', '05:00 PM — Friday Code Freeze'.",
+  getVerbs: function() {
+    const verbs = [{ name: 'Examine', action: 'examine %' }, { name: 'HotSync', action: 'use %' }]
+    if (this.isHeld()) verbs.push({ name: 'Drop', action: 'drop %' })
+    else verbs.push({ name: 'Take', action: 'take %' })
+    return verbs
+  },
+  use: function() {
+    msg("<b>*BEEP-BOOP!*</b> You press the yellow button on the HotSync cradle.")
+    msg("A progress bar sweeps across the monochrome screen: <i>'Syncing Graffiti shorthand notes with Desktop Manager over COM2...'</i>")
+    return world.SUCCESS
+  }
+})
+
+// --- JUNIOR DEV KEVIN (Office Corridor) ---
+createItem("kevin_jr_dev", NPC(), {
+  loc: "floor3_office_corridor",
+  alias: "Kevin (Junior Developer)",
+  synonyms: ['kevin', 'junior dev', 'jr dev', 'dev', 'developer'],
+  examine: "Kevin is pacing the hallway near Office 4, nervously clicking a ballpoint pen while reviewing a stack of C++ header file printouts.",
+  getVerbs: function() {
+    return [
+      { name: 'Examine', action: 'examine %' },
+      { name: 'Talk to', action: 'talk to %' },
+    ]
+  },
+  talkto: function() {
+    const kevinQuotes = [
+      "<i>'Skyler! Did the lead dev tell you when she's checking `main.cpp` back into Visual SourceSafe? I've been waiting two hours for the file lock to release!'</i>",
+      "<i>'I accidentally set my memory buffer to 256 bytes instead of 512 and now the build tree is throwing stack overflow exceptions.'</i>",
+      "<i>'Have you checked out Evelyn's Y2K binder in Meeting Room B? She made me audit 1,200 lines of date-parsing code before lunch yesterday! I hope she doesn't make me do it again today.'</i>"
+    ]
+    const randomQuote = kevinQuotes[Math.floor(Math.random() * kevinQuotes.length)]
+    msg(`Kevin stops pacing and looks up anxiously:<br>${randomQuote}`)
+    return world.SUCCESS
+  }
+})
+
+// --- IT WISHLIST WHITEBOARD (Office Corridor) ---
+createItem("wishlist_whiteboard", {}, {
+  loc: "floor3_office_corridor",
+  alias: "IT Wishlist Whiteboard",
+  synonyms: ['whiteboard', 'wishlist', 'board', 'list'],
+  examine: "A dry-erase board mounted between Office 4 and 5 titled 'Q4 IT WISHLIST':<br><br>1. Upgrade all developer workstations to Windows 98 SE<br>2. Call AOL and ask them to stop sending us CDs - we have enough coasters<br>3. Find my red Swingline stapler<br>4. Enforce SSL encryption across internal intranet subnets (<i>DEFERRED TO Q2 1999</i>)",
+})
+
 
 // --- ACT 3 ITEMS ---
 
@@ -2269,6 +2575,40 @@ createItem("sticky_note", TAKEABLE(), {
   }
 })
 
+createItem("zip_disk", TAKEABLE(), {
+  loc: "basement_archive",
+  alias: "Iomega Zip 100MB disk",
+  synonyms: ['zip disk', 'iomega', 'zip', 'disk', 'backup disk', 'iomega zip disk'],
+  examine: "A thick blue plastic Iomega Zip 100MB disk with a rigid protective shell and a sliding metal shutter. A hand-written label across the front reads: 'Q3_FULL_BACKUP_FINAL_v2.ZIP'.",  getVerbs: function() {
+    const verbs = [
+      { name: 'Examine', action: 'examine %' },
+      { name: 'Insert into Drive', action: 'use %' },
+    ]
+    if (this.isHeld()) {
+      verbs.push({ name: 'Drop', action: 'drop %' })
+    } else {
+      verbs.push({ name: 'Take', action: 'take %' })
+    }
+    return verbs
+  },
+  use: function() {
+    if (!this.isHeld()) {
+      msg("You need to take the Zip disk before trying to load it into a drive.")
+      return world.FAILED
+    }
+    
+    msg("<b>*CHUNK-CLICK... CLICK... CLICK... CLICK...*</b>")
+    msg("You slide the thick blue Zip disk into an external Parallel Port Zip Drive on the workbench.")
+    msg("An eerie, rhythmic metallic clatter echoes through the room... the legendary <b>Click of Death</b>!")
+    msg("The drive motor groans, the activity light flashes frantically red, and the OS displays a kernel panic: <code style='color:red;'>FATAL I/O ERROR: DISK HEAD ALIGNMENT FAILURE</code>.")
+    msg("<b>*POP-CLACK*</b> The drive abruptly ejects the disk, which lands right back on the workbench.")
+    msg("<br>You smooth your shirt down, step back, and pretend that didn't just happen.")
+
+    // Place the disk back on the workbench in the room
+    this.loc = player.loc
+    return world.SUCCESS
+  }
+})
 createItem("rogue_modem", {}, {
   loc: "floor1_telecom_closet",
   alias: "USRobotics 56k Modem",
@@ -2304,7 +2644,55 @@ createItem("wire_stripper", TAKEABLE(), {
 })
 
 // --- ACT 4 ITEMS ---
+createItem("executive_poster", {}, {
+  loc: "floor4_landing",
+  alias: "framed motivational poster",
+  synonyms: ['poster', 'motivational poster', 'picture', 'framed poster'],
+  examine: "A large framed Successories poster depicting a soaring eagle over a mountain peak. The bold title reads: <i>'VISION: The art of seeing what is invisible to others.'</i> Underneath, someone penciled in fine tip marker: <i>'...like unpatched Telnet backdoors in the basement.'</i>",
+})
 
+createItem("executive_espresso_machine", {}, {
+  loc: "boardroom_2",
+  alias: "Gaggia Deluxe Espresso Machine",
+  synonyms: ['espresso machine', 'gaggia', 'espresso', 'coffee machine', 'machine'],
+  icon: () => 'coffee',
+  examine: "A gleaming chrome Italian espresso machine that looks like it costs more than the basement server rack. A small brass plaque on the side reads: 'Executive Suite Access Only'.",
+  getVerbs: function() {
+    return [
+      { name: 'Examine', action: 'examine %' },
+      { name: 'Brew Espresso', action: 'use %' }
+    ]
+  },
+  use: function() {
+    if (!puzzles.act3Complete) {
+      msg("<b>*PSSSSHHH-CLICK*</b> You turn the brass steam knob. The machine lets out an arrogant burst of steam, but a digital panel flashes: <code style='color:red;'>ACCESS DENIED — EXECUTIVE C-SUITE CREDENTIALS REQUIRED</code>.")
+      return world.SUCCESS
+    }
+
+    msg("<b>*PSSSSHHH-CREMA*</b> High-pressure Italian steam hiss echoes through the boardroom as a rich, dark shot of executive espresso pulls into a tiny porcelain cup.")
+    msg("You take a sip. It tastes like high-yield stock options and corporate triumph.")
+    return world.SUCCESS
+  }
+})
+
+createItem("stock_ticker", {}, {
+  loc: "floor4_lobby",
+  alias: "Stock Ticker LED Display",
+  synonyms: ['ticker', 'stock ticker', 'led display', 'display', 'led banner', 'banner'],
+  icon: () => 'monitor',
+  examine: function() {
+    if (!puzzles.networkIsolated) {
+      return "A red LED dot-matrix banner scrolling along the top wall:<br><code>TMPST: 42.50 ▲ +1.25 | AAPL: 14.20 ▼ | MSFT: 108.75 ▲ | IBM: 128.10 ▲</code><br><br>Every few seconds, data corruption flickers across the stream: <code style='color:red;'>*** ERR: C2 PACKET INTERCEPT DETECTED ***</code>."
+    } else {
+      return "A red LED dot-matrix banner scrolling along the top wall:<br><code>TMPST: 42.50 ▲ +1.25 | AAPL: 14.20 ▼ | MSFT: 108.75 ▲ | IBM: 128.10 ▲</code><br><br>The ticker stream runs smooth and clear following network isolation."
+    }
+  },
+  getVerbs: function() {
+    return [
+      { name: 'Examine', action: 'examine %' }
+    ]
+  }
+})
 createItem("peggy_ea", NPC(), {
   loc: "floor4_lobby",
   alias: "Peggy (Executive Assistant)",
@@ -2371,7 +2759,6 @@ createItem("ceo_victoria", NPC(), {
   talkto: function() {
     if (!puzzles.networkIsolated) {
       msg("Victoria Sterling: 'Skyler! Thank goodness you're here. I just opened a PDF attached to an email titled <i>Q3_Executive_Bonus_Structure.pdf.exe</i> and now all my spreadsheets have .locked extensions!'")
-      msg("<i>'Sever the network gateway under my desk before it spreads to the rest of the company!'</i>")
       return world.SUCCESS
     } else if (!puzzles.backupRestored) {
       msg("Victoria Sterling: 'Great job cutting the exfiltration feed! Now head into the Executive Telecom Closet and initiate an offline system restore from the immutable backup controller.'")
@@ -2385,13 +2772,13 @@ createItem("ceo_victoria", NPC(), {
 
 createItem("network_gateway", {}, {
   loc: "ceo_office",
-  alias: "network gateway switch",
-  synonyms: ['gateway', 'switch', 'network switch', 'cable', 'ethernet cable', 'red cable'],
+  alias: "RJ-45 Ethernet wall jack & transceiver",
+  synonyms: ['gateway', 'switch', 'network switch', 'cable', 'ethernet cable', 'red cable', 'transceiver', 'wall jack', 'jack'],
   examine: function() {
     if (!puzzles.networkIsolated) {
-      return "A high-speed fiber switch mounted beneath the desk. A thick red Ethernet cable is transmitting encrypted data out to an external IP address. You can type <b>unplug cable</b> or <b>isolate network</b> to kill the connection."
+      return "A heavy metal wall plate beneath the desk housing a 100BASE-TX Fast Ethernet transceiver. A bright red Category 5 Ethernet cable is plugged in, its activity light blinking furiously as encrypted data streams to an external IP address."
     } else {
-      return "The red Ethernet cable hangs disconnected from the gateway switch. The outbound C2 data stream is dead."
+      return "The red CAT5 Ethernet cable hangs disconnected from the metal wall jack. The outbound C2 data stream is dead."
     }
   }
 })
@@ -2625,7 +3012,7 @@ commands.push(new Cmd('OrderFood', {
       msg("Java Joe winks: 'You've already got a fresh sandwich right there!'")
       return world.SUCCESS
     }
-    if (!puzzles.act1Complete) {
+    if (!puzzles.act2Complete) {
       msg("Java Joe shakes his head: 'Sorry, Skyler, the kitchen doesn't open for lunch until noon.'")
       return world.FAILED
     }
@@ -2772,7 +3159,7 @@ commands.push(new Cmd('CallPhone', {
     if (targetNum === "411") {
       msg("A crackly automated voice greets you over a burst of line static:")
       msg("<i>'City and state, please?'</i>")
-      msg("You pause, and the voice continues automatically: <i>'Listing found for: TEMPEST WEATHERWEAR HQ — 100 Plaza Way, Chicago, IL. Connecting you now...'</i>")
+      msg("You reply back with the details for Tempest, and the voice continues automatically: <i>'Listing found for: TEMPEST WEATHERWEAR HQ — 100 Plaza Way, Chicago, IL. Connecting you now...'</i>")
       msg("<b>*CLICK-RITZZZ*</b>")
       msg("An automated voice-mail prompt answers: <i>'Thank you for calling Tempest Weatherwear. Our switchboard is currently experiencing high call volume due to an active network incident.'</i>")
       return world.SUCCESS
@@ -2868,6 +3255,11 @@ commands.push(new Cmd('ScanBadge', {
       return world.SUCCESS
     }
 
+    // Move Morgan to the café after scanning the badge
+    if (w.morgan_ir_lead.loc === "floor1_entrance") {
+      w.morgan_ir_lead.loc = "leaky_mug_cafe"
+    }
+
     puzzles.badgeScanned = true
     w.security_office_door.isOpen = true
     msg("<b>*BEEP-CHIME*</b> You swipe your badge on the scanner. The LED indicator turns green, and the heavy door unlatches and clicks open!")
@@ -2927,6 +3319,7 @@ commands.push(new Cmd('SyncRSAToken', {
     puzzles.currentRSAPasscode = inputCode
     puzzles.monitorSync = true
     puzzles.elevatorUnlocked = true  
+    puzzles.act1Complete = true
     awardMetaAchievement("mfa_master")
 
     renderActBanner(
@@ -3006,7 +3399,7 @@ commands.push(new Cmd('DisableFTP', {
 }))
 
 commands.push(new Cmd('FixXSS', {
-  regex: /^(?:fix xss|sanitize input|escape html|patch portal|fix portal|encode input|fix bug)$/i,
+  regex: /^(?:fix xss|sanitize input|escape html|patch portal|fix portal|encode input|fix bug|fix cross-html script tag injection)$/i,
   objects: [],
   script: function() {
     if (player.loc !== "office_4") {
@@ -3015,12 +3408,12 @@ commands.push(new Cmd('FixXSS', {
     }
 
     if (!w.xss_bug_report.isHeld()) {
-      msg("You don't have the active XSS ticket! Talk to the QA Tester in Floor 2 DevOps to get the vulnerability details first.")
+      msg("You don't have the active bug ticket! Talk to the QA Tester in Floor 2 DevOps to get the vulnerability details first.")
       return world.FAILED
     }
 
     if (puzzles.xssFixed) {
-      msg("The XSS vulnerability is already patched. All user input in the ordering portal is strictly escaped.")
+      msg("The script tag injection vulnerability is already patched. All user input in the ordering portal is strictly escaped.")
       awardMetaAchievement("xss_slayer")
       return world.SUCCESS
     }
@@ -3028,34 +3421,61 @@ commands.push(new Cmd('FixXSS', {
     puzzles.xssFixed = true
     if (typeof metamenu !== "undefined") metamenu.awardAchievement("xss_slayer")
 
-    msg("<b>You sit down at your workstation and open order_comments.js in VS Code:</b>")
+    msg("<b>You sit down at your CRT monitor and open order_comments.js in UltraEdit-32:</b>")
     msg("<code>// BEFORE: container.innerHTML = userInput;</code>")
-    msg("<code>// AFTER:  container.textContent = sanitizeHTML(userInput);</code>")
-    msg("<br>You wrap the customer review field with strict HTML entity encoding, commit the changes to Git, and push to main.")
-    msg("The automated pipeline passes! <b style='color:green;'>SUCCESS: STORED XSS VULNERABILITY NEUTRALIZED!</b>")
+    msg("<code>// AFTER:  container.innerText = sanitizeHTML(userInput);</code>")
+    msg("<br>You wrap the customer review field with strict HTML entity encoding, check out the file lock in <b>Visual SourceSafe</b>, and check in the patched revision to the build tree.")
+    msg("The automated C++ compilation pipeline passes! <b style='color:green;'>SUCCESS: CROSS-HTML SCRIPT INJECTION NEUTRALIZED!</b>")
     
     return world.SUCCESS
   }
 }))
 
-// Fix Shadow Admin Command (DevOps Terminal)
-commands.push(new Cmd('FixShadowAdmin', {
-  regex: /^(?:sanitize|fix|secure|reconfigure|use) (?:keycard|least privilege keycard|terminal|shadow admin)$/,
+
+commands.push(new Cmd('SqueezeBeanieBaby', {
+  regex: /^(?:squeeze|squish|hug|compress)(?: (?:the|a))? (?:beanie baby|puddles|penguin|plush|toy|beanie|puddles the penguin beanie baby)$/i,
   objects: [],
   script: function() {
-    if (player.loc !== "floor2_devops") {
-      msg("You need to be in the Build & Release Lab near the deployment terminal.")
+    if (player.loc !== w.puddles_beanie_baby.loc && !w.puddles_beanie_baby.isHeld()) {
+      msg("Puddles the Penguin isn't here to squeeze.")
       return world.FAILED
     }
-    if (!w.least_privilege_keycard.isHeld()) {
-      msg("You need the Least Privilege Keycard from your manager to access the server and reconfigure the access control policies.")
-      return world.FAILED
-    }
-    puzzles.shadowAdminFixed = true
-    w.pipeline_logs.loc = "me" 
-    msg("You swipe the Least Privilege Keycard at the terminal. Over-privileged build script service accounts are revoked and restricted to read-only access!")
-    msg("The terminal printer clacks furiously and spits out a fresh printout of the <b>Nightly Build Logs</b>. You pick them up.")
+    return w.puddles_beanie_baby.squeeze()
+  }
+}))
+
+// Fix Shadow Admin Command (DevOps Terminal)
+// Shared by the FixShadowAdmin command and the keycard's useFunction so "use keycard" works too.
+function executeFixShadowAdmin() {
+  if (player.loc !== "floor2_devops") {
+    msg("You need to be in the Build & Release Lab near the deployment terminal.")
+    return world.FAILED
+  }
+  if (!w.least_privilege_keycard.isHeld()) {
+    msg("You need the Least Privilege Keycard from your manager to access the server and reconfigure the access control policies.")
+    return world.FAILED
+  }
+  if (puzzles.shadowAdminFixed) {
+    msg("The deployment terminal is already secured under the Least Privilege policy.")
     return world.SUCCESS
+  }
+  puzzles.shadowAdminFixed = true
+  w.pipeline_logs.loc = "me" 
+  msg("<b>*BEEP-CHIME*</b> You swipe the Least Privilege Keycard at the terminal terminal console.")
+  msg("<br><b>[WINDOWS NT 4.0 DOMAIN ADMIN CONSOLE — ACCOUNT AUDIT]</b>")
+  msg("<code>> usrmgr.exe /domain:TEMPEST /revoke 'Domain Admins' svc_builder</code>")
+  msg("<code>> cacls C:\\Scripts\\make_release.bat /G 'Domain Users':R Administrators:F</code>")
+  msg("<code>> net stop 'NT Schedule' && net start 'NT Schedule' /user:svc_builder</code>")
+  msg("<br><b style='color:green;'>SUCCESS: LEAST PRIVILEGE POLICY ENFORCED!</b> Over-privileged build script service accounts are revoked and restricted to batch job execution under <code>svc_builder</code>.")
+  msg("<br>The dot-matrix line printer beside the terminal clacks furiously, spitting out a fresh printout of the <b>Nightly Build Logs</b>. You tear off the sheet and tuck it into your folder.")
+  return world.SUCCESS
+}
+
+commands.push(new Cmd('FixShadowAdmin', {
+  regex: /^(?:sanitize|fix|secure|reconfigure|use)(?: the)? (?:keycard|least privilege keycard|least privilege card|shadow admin terminal|deployment terminal|terminal|shadow admin)$/i,
+  objects: [],
+  script: function() {
+    return executeFixShadowAdmin()
   }
 }))
 
@@ -3147,6 +3567,7 @@ commands.push(new Cmd('PerformThreatModel', {
     }
 
     puzzles.threatModelComplete = true
+    puzzles.act2Complete = true
     
     renderActBanner(
       "ACT II COMPLETE",
@@ -3207,7 +3628,7 @@ commands.push(new Cmd('CloseUmbrella', {
 }))
 
 commands.push(new Cmd('StopPhishingAttack', {
-  regex: /^(?:stop|block|intercept|report|delete|cancel)(?: (?:the|a))? (?:phish|phishing|kevin|sales representative|installer|rootkit|survey\.exe|gift card)?$/i,
+  regex: /^(?:stop|block|intercept|report|delete|cancel)(?: (?:the|a))? (?:phish|phishing|kevin|sales representatives|installer|rootkit|survey\.exe|gift card)?$/i,
   objects: [],
   script: function() {
     if (player.loc !== "floor2_sales") {
@@ -3466,61 +3887,32 @@ commands.push(new Cmd('RestoreBackups', {
     }
 
     puzzles.backupRestored = true
-    puzzles.act4Complete = true
 
+    // Immediate action feedback (printed right here at the terminal)
     msg("You type in the emergency incident recovery key and initiate the roll-back protocol.")
     msg("The backup domain controller purges the ransomware payloads, decrypts the CEO's workstation shares, and deploys zero-day signatures across all company endpoints.")
     msg("<br><b style='color:green;'>SUCCESS: EXECUTIVE RANSOMWARE THREAT FULLY NEUTRALIZED!</b>")
+    msg("<br>The alarm sirens silence across the floor. In the adjacent office, the giant skull-and-crossbones graphic on CEO Victoria Sterling's monitor vanishes, replaced by a clean green prompt: <b style='color:#00ff00;'>SYSTEM ENCRYPTION REMOVED — ALL FILES RESTORED</b>.")
 
-    // --- DYNAMIC SCORECARD CALCULATIONS ---
+    // Check if ALL preceding Acts are complete
+    const allActsComplete = puzzles.act1Complete && puzzles.act2Complete && puzzles.act3Complete
+
+    if (!allActsComplete) {
+      msg(`<br><div style="border: 2px solid #ffc107; background-color: #fff3cd; color: #856404; padding: 15px; border-radius: 6px;">
+        <b style="font-size:1.1em;">RANSOMWARE CONTAINED — UNFINISHED BUSINESS ON LOWER FLOORS</b><br><br>
+        CEO Victoria Sterling lets out a breath of relief, but then checks her encrypted messages.<br><br>
+        Victoria: <i>'Incredible work stopping the exfiltration, Skyler! However, Morgan just messaged me. She informed me that several critical issues still remain unresolved—like our threat modeling, infrastructure controls, or server room remediation.'</i><br><br>
+        Victoria: <i>'Please go back down and work with Morgan and the team.  Once those are cleared up, report back to your <b>Security Manager</b> for your status.'</i>
+      </div><br>`)
+      return world.SUCCESS
+    }
+
+    // If all Acts are complete, finish the game immediately!
     const allAchievements = Object.values(globalThis.metamenu?.achievements ?? {})
     const totalCount = allAchievements.length || 15
     const unlockedCount = allAchievements.filter(ach => ach.unlocked).length
     const scorePct = Math.round((unlockedCount / totalCount) * 100)
 
-    // Performance Rank Title
-    let rankTitle = "JUNIOR IT SUPPORT TECH"
-    if (scorePct === 100) rankTitle = "LEGENDARY CHIEF INFORMATION SECURITY OFFICER (CISO)"
-    else if (scorePct >= 80) rankTitle = "SENIOR SECURITY CHAMPION"
-    else if (scorePct >= 60) rankTitle = "INCIDENT RESPONSE SPECIALIST"
-    else if (scorePct >= 40) rankTitle = "APPSEC CODE AUDITOR"
-
-    // --- HIGH-IMPACT VICTORY SCREEN ---
-// --- HIGH-IMPACT VICTORY SCREEN ---
-    msg(`<br><div style="border: 3px double #00ff00; background-color: #041405; color: #33ff33; padding: 20px; border-radius: 8px; font-family: monospace; box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);">
-      <div style="font-size: 1.6em; font-weight: bold; letter-spacing: 2px; text-align: center; color: #00ff00;">
-        🎉 MISSION ACCOMPLISHED — TEMPEST HQ SAVED! 🎉
-      </div>
-      <div style="font-size: 1.0em; text-align: center; color: #17a2b8; margin-top: 4px; font-style: italic;">
-        Official Incident Remediated — Downtown Chicago HQ
-      </div>
-      <hr style="border: 0; border-top: 1px solid #00aa00; margin: 12px 0;">
-      
-      <p>The alarm sirens silence across all four floors. The giant skull-and-crossbones graphic on CEO Victoria Sterling's monitor vanishes, replaced by a clean green prompt: <b style="color:#00ff00;">SYSTEM ENCRYPTION REMOVED — ALL FILES RESTORED</b>.</p>
-      
-      <p>Victoria Sterling breathes a massive sigh of relief, lets out a laugh, and turns to your Security Manager: <i>'Unbelievable teamwork! Skyler just stopped a catastrophic data leak, bridged the gap between Dev and Sec, and saved our Chicago headquarters!'</i></p>
-      
-      <p>Your Security Manager grins and nods approvingly: <i>'I told you hiring a Security Champion was the right move!'</i></p>
-      
-      <p>Victoria smiles and says to your manager: <i>'As soon as our network finishes stabilizing, I want you to fast-track Skyler for a well-earned promotion!'</i></p>
-
-      <div style="border: 1px dashed #28a745; background-color: #09240c; padding: 12px; margin: 14px 0; border-radius: 5px;">
-        <div style="font-size: 1.1em; font-weight: bold; color: #ffc107; text-align: center;">
-          📊 FINAL SECURITY CHAMPION SCORECARD
-        </div>
-        <hr style="border: 0; border-top: 1px solid #1e7e34; margin: 8px 0;">
-        <div style="font-size: 1.05em; line-height: 1.6;">
-          • <b>Achievements Unlocked:</b> <span style="color:#00ff00; font-weight:bold;">${unlockedCount} / ${totalCount}</span> (${scorePct}% Completion)<br>
-          • <b>Final Performance Rank:</b> <span style="color:#ffc107; font-weight:bold;">${rankTitle}</span><br>
-          • <b>Status:</b> C-Suite Incident Closed & Executive Promotion Recommended
-        </div>
-      </div>
-
-      <p style="text-align: center; font-weight: bold; color: #00ff00; margin-bottom: 0;">
-        THANK YOU FOR PLAYING Security Champion: The Quest for Total Remediation!
-      </p>
-    </div><br>`)
-
-    return world.SUCCESS
+    return triggerFinalGameVictory(unlockedCount, totalCount, scorePct)
   }
 }))

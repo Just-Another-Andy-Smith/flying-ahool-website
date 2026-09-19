@@ -3,7 +3,7 @@
 settings.title = "Security Champion: The Quest for Total Remediation (Enterprise Edition)"
 settings.author = "The Ahool Studios"
 settings.version = "1.0"
-settings.thanks = ["QuestJS for doing the heavy lifing", "OWASP Security Champions for their inspiration", "Most importantly, you for playing!"]
+settings.thanks = ["QuestJS for doing the heavy lifing", "OWASP Security Champions for their inspiration", "most importantly, you for playing!"]
 settings.warnings = "No warnings have been set for this game."
 settings.playMode = "parser" //dev to enable debugging features, parser for the standard parser-based game, or choice for a choice-based game.
 settings.placeholderLocations = ['nowhere']
