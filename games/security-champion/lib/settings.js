@@ -14,9 +14,6 @@ try {
 const settings = {
   performanceLogStartTime:performance.now(),
 
-  
-  // Also title, author, thanks (option; array)
-  
   // Files
   lang:"lang-en",      // Set to the language file of your choice
   customExits:false,      // Set to true to use custom exits, in exits.js
