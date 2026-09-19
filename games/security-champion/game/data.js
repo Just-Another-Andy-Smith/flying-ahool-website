@@ -82,10 +82,15 @@ function renderAchievementPaneHTML() {
   return `<div class="item-list">${html}</div>`
 }
 
+// Chain onto any previously-defined settings.customUI (e.g. the Site Map pane
+// set up in settings.js) instead of overwriting it, since settings.customUI is
+// a single function reference invoked once by io.createPanes.
+const previousCustomUI = settings.customUI
 settings.customUI = function() {
+  if (typeof previousCustomUI === 'function') previousCustomUI()
   if (typeof createAdditionalPane !== "function") return
   if (!document.querySelector('#achievement-list-pane-outer')) {
-    createAdditionalPane(4, 'Achievements', 'achievement-list-pane', renderAchievementPaneHTML)
+    createAdditionalPane(5, 'Achievements', 'achievement-list-pane', renderAchievementPaneHTML)
   }
 }
 
@@ -94,7 +99,9 @@ function showMap() {
     map.update()
   }
   const mapEl = document.querySelector('#quest-map')
-  if (mapEl) mapEl.style.display = 'block'
+  if (mapEl) {
+    mapEl.style.display = 'block'
+  }
 }
 
 io.getIcon = function(item) {
@@ -1362,6 +1369,23 @@ createItem("rolodex", {}, {
   synonyms: ['rolodex', 'card index', 'contacts', 'index'],
   icon: () => 'document',
   examine: "A heavy black-and-chrome desk Rolodex crammed with dog-eared index cards. A quick spin reveals phone numbers for Little Nero's Pizza (a local pizza restaurant), various vendor fax lines, emergency CRT repair, and a hand-written card with a heart drawn in red ink labeled: <i>'Jenny — 867-5309'</i>.",
+})
+
+createItem("tempest_floor_map", TAKEABLE(), {
+  loc: "security_office",
+  alias: "Tempest Floor Map",
+  synonyms: ['floor map', 'building map', 'tempest map', 'map'],
+  icon: () => 'document',
+  examine: "A laminated Tempest HQ floor map marked with elevator landings, offices, and security checkpoints.",
+  take: function(options) {
+    const taken = TAKEABLE().take.call(this, options)
+    if (taken) {
+      settings.mapShowNotVisited = true
+      if (typeof showMap === 'function') showMap()
+      msg("The Tempest Floor Map unfolds across the desk. Your map now reveals every known floor and room.")
+    }
+    return taken
+  },
 })
 
 createItem("sandwich_sign", {}, {
