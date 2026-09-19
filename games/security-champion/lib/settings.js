@@ -14,6 +14,9 @@ try {
 const settings = {
   performanceLogStartTime:performance.now(),
 
+  
+  // Also title, author, thanks (option; array)
+  
   // Files
   lang:"lang-en",      // Set to the language file of your choice
   customExits:false,      // Set to true to use custom exits, in exits.js
@@ -304,9 +307,9 @@ settings.performanceLog = function(s) {
 
 // These two functions use values in settings, so have to be set later
 settings.inventoryPane = [
-  {name:'Items Held', alt:'itemsHeld', test:settings.isHeldNotWorn, getLoc:function() { return player.name; } },
+  {name:settings.herePaneHeader || 'Items Here', alt:'itemsHere', test:settings.isHere, getLoc:function() { return player.loc; } },
+  {name:settings.heldPaneHeader || 'Items Held', alt:'itemsHeld', test:settings.isHeldNotWorn, getLoc:function() { return player.name; } },
   {name:'Items Worn', alt:'itemsWorn', test:settings.isWorn, getLoc:function() { return player.name; } },
-  {name:'Items Here', alt:'itemsHere', test:settings.isHere, getLoc:function() { return player.loc; } },
 ]
 
 settings.setUpDialogClick = function() {
